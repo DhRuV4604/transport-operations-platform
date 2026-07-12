@@ -1,6 +1,6 @@
 # TransitOps — Next Steps
 
-Gap analysis against the hackathon brief (`TransitOps Smart Transport Operations Platform.pdf`),
+Gap analysis against the hackathon brief (`docs/TransitOps Smart Transport Operations Platform.pdf`),
 plus a prioritized roadmap for what to build next. Status as of 2026-07-12 — all items below
 are now implemented; see `DEPLOYMENT.md` for going live.
 
