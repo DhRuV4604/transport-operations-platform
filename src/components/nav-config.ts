@@ -3,6 +3,7 @@ import {
   Truck,
   Users,
   Route,
+  Map,
   Wrench,
   Fuel,
   BarChart3,
@@ -34,6 +35,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/vehicles", label: "Vehicles", icon: Truck, jump: "v", keywords: "fleet trucks vans registry" },
       { href: "/drivers", label: "Drivers", icon: Users, jump: "u", keywords: "people licenses safety" },
       { href: "/trips", label: "Trips", icon: Route, jump: "t", keywords: "dispatch routes journeys" },
+      { href: "/live-map", label: "Live Map", icon: Map, jump: "l", keywords: "tracking gps fleet location india" },
     ],
   },
   {

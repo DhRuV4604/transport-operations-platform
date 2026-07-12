@@ -29,7 +29,10 @@ async function main() {
     ],
   });
 
-  const [truck1, truck2, van1, van2, van3, bike1, shopVan, retiredTruck] = await Promise.all(
+  const [
+    truck1, truck2, van1, van2, van3, bike1, shopVan, retiredTruck,
+    haulTruck1, haulTruck2, haulTruck3, haulVan,
+  ] = await Promise.all(
     [
       { regNumber: "MH12-TRK-001", name: "Tata LPT 1613", type: "TRUCK", maxLoadKg: 9000, odometerKm: 84500, acquisitionCost: 2400000, status: "AVAILABLE", region: "WEST" },
       { regNumber: "GJ01-TRK-002", name: "Ashok Leyland Ecomet", type: "TRUCK", maxLoadKg: 7500, odometerKm: 61200, acquisitionCost: 2100000, status: "ON_TRIP", region: "WEST" },
@@ -39,10 +42,15 @@ async function main() {
       { regNumber: "KA05-BIK-001", name: "Hero Splendor Cargo", type: "BIKE", maxLoadKg: 40, odometerKm: 12800, acquisitionCost: 85000, status: "AVAILABLE", region: "SOUTH" },
       { regNumber: "DL08-VAN-004", name: "Force Traveller Cargo", type: "VAN", maxLoadKg: 1200, odometerKm: 45900, acquisitionCost: 950000, status: "IN_SHOP", region: "NORTH" },
       { regNumber: "MH12-TRK-000", name: "Eicher Pro 1110 (old)", type: "TRUCK", maxLoadKg: 6000, odometerKm: 245000, acquisitionCost: 1500000, status: "RETIRED", region: "WEST" },
+      // Long-haul fleet currently on the road (drives the Live Map).
+      { regNumber: "DL01-TRK-010", name: "BharatBenz 2823R", type: "TRUCK", maxLoadKg: 12000, odometerKm: 132000, acquisitionCost: 3200000, status: "ON_TRIP", region: "NORTH" },
+      { regNumber: "MH14-TRK-011", name: "Tata Prima 3125", type: "TRUCK", maxLoadKg: 11000, odometerKm: 98000, acquisitionCost: 3400000, status: "ON_TRIP", region: "WEST" },
+      { regNumber: "TN09-TRK-012", name: "Ashok Leyland 4220", type: "TRUCK", maxLoadKg: 13000, odometerKm: 76000, acquisitionCost: 3600000, status: "ON_TRIP", region: "SOUTH" },
+      { regNumber: "WB02-VAN-013", name: "Tata Intra V30", type: "VAN", maxLoadKg: 1300, odometerKm: 41000, acquisitionCost: 780000, status: "ON_TRIP", region: "EAST" },
     ].map((data) => db.vehicle.create({ data }))
   );
 
-  const [ravi, meera, john, priya, karan, expired] = await Promise.all(
+  const [ravi, meera, john, priya, karan, expired, arjun, sunita, imran, deepa] = await Promise.all(
     [
       { name: "Ravi Kumar", licenseNumber: "MH12-2019-0011", licenseCategory: "HMV", licenseExpiry: daysFromNow(400), phone: "+91 98200 11001", safetyScore: 92, status: "AVAILABLE" },
       { name: "Meera Joshi", licenseNumber: "GJ01-2020-0202", licenseCategory: "HMV", licenseExpiry: daysFromNow(700), phone: "+91 98200 11002", safetyScore: 88, status: "ON_TRIP" },
@@ -50,6 +58,10 @@ async function main() {
       { name: "Priya Nair", licenseNumber: "DL08-2021-0404", licenseCategory: "LMV", licenseExpiry: daysFromNow(900), phone: "+91 98200 11004", safetyScore: 95, status: "OFF_DUTY" },
       { name: "Karan Singh", licenseNumber: "MH12-2017-0505", licenseCategory: "HMV", licenseExpiry: daysFromNow(60), phone: "+91 98200 11005", safetyScore: 45, status: "SUSPENDED" },
       { name: "Vikram Rao", licenseNumber: "KA05-2015-0606", licenseCategory: "LMV", licenseExpiry: daysAgo(30), phone: "+91 98200 11006", safetyScore: 78, status: "AVAILABLE" },
+      { name: "Arjun Mehta", licenseNumber: "DL01-2019-0707", licenseCategory: "HMV", licenseExpiry: daysFromNow(500), phone: "+91 98200 11007", safetyScore: 90, status: "ON_TRIP" },
+      { name: "Sunita Rao", licenseNumber: "MH14-2020-0808", licenseCategory: "HMV", licenseExpiry: daysFromNow(620), phone: "+91 98200 11008", safetyScore: 87, status: "ON_TRIP" },
+      { name: "Imran Sheikh", licenseNumber: "TN09-2018-0909", licenseCategory: "HMV", licenseExpiry: daysFromNow(300), phone: "+91 98200 11009", safetyScore: 83, status: "ON_TRIP" },
+      { name: "Deepa Iyer", licenseNumber: "WB02-2021-1010", licenseCategory: "LMV", licenseExpiry: daysFromNow(800), phone: "+91 98200 11010", safetyScore: 91, status: "ON_TRIP" },
     ].map((data) => db.driver.create({ data }))
   );
   void expired; // available but expired license — must never appear in dispatch pool
@@ -84,6 +96,35 @@ async function main() {
       source: "Ahmedabad", destination: "Surat", vehicleId: truck2.id, driverId: meera.id,
       cargoWeightKg: 6800, plannedDistanceKm: 265, revenue: 60000, status: "DISPATCHED",
       startOdometerKm: 61200, dispatchedAt: daysAgo(1), createdAt: daysAgo(1),
+    },
+  });
+  // Long-haul trips currently in transit — these populate the Live Map.
+  await db.trip.create({
+    data: {
+      source: "Delhi", destination: "Bengaluru", vehicleId: haulTruck1.id, driverId: arjun.id,
+      cargoWeightKg: 10500, plannedDistanceKm: 2150, revenue: 185000, status: "DISPATCHED",
+      startOdometerKm: 132000, dispatchedAt: daysAgo(2), createdAt: daysAgo(2),
+    },
+  });
+  await db.trip.create({
+    data: {
+      source: "Mumbai", destination: "Kolkata", vehicleId: haulTruck2.id, driverId: sunita.id,
+      cargoWeightKg: 9800, plannedDistanceKm: 1960, revenue: 172000, status: "DISPATCHED",
+      startOdometerKm: 98000, dispatchedAt: daysAgo(1.5), createdAt: daysAgo(2),
+    },
+  });
+  await db.trip.create({
+    data: {
+      source: "Chennai", destination: "Hyderabad", vehicleId: haulTruck3.id, driverId: imran.id,
+      cargoWeightKg: 12000, plannedDistanceKm: 630, revenue: 96000, status: "DISPATCHED",
+      startOdometerKm: 76000, dispatchedAt: daysAgo(0.4), createdAt: daysAgo(1),
+    },
+  });
+  await db.trip.create({
+    data: {
+      source: "Kolkata", destination: "Guwahati", vehicleId: haulVan.id, driverId: deepa.id,
+      cargoWeightKg: 1100, plannedDistanceKm: 990, revenue: 64000, status: "DISPATCHED",
+      startOdometerKm: 41000, dispatchedAt: daysAgo(0.8), createdAt: daysAgo(1),
     },
   });
   await db.trip.create({
