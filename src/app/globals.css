@@ -81,6 +81,12 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* chart series — CVD-validated pair (blue, aqua) + status hues; dark mode re-steps them */
+  --viz-1: #2a78d6;
+  --viz-2: #1baf7a;
+  --viz-good: #0ca30c;
+  --viz-warn: #c98500;
+  --viz-neutral: #898781;
 }
 
 .dark {
@@ -115,6 +121,11 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --viz-1: #3987e5;
+  --viz-2: #199e70;
+  --viz-good: #0ca30c;
+  --viz-warn: #c98500;
+  --viz-neutral: #898781;
 }
 
 @layer base {
