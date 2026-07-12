@@ -9,6 +9,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -75,36 +76,38 @@ export function Topbar({
             )}
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
-            <DropdownMenuLabel>Needs attention</DropdownMenuLabel>
-            {attention === 0 ? (
-              <div className="flex items-center gap-2 px-1.5 py-3 text-sm text-muted-foreground">
-                <CheckCircle2 className="size-4 text-success" />
-                All clear — nothing expiring.
-              </div>
-            ) : (
-              <>
-                <DropdownMenuItem
-                  render={<Link href="/drivers" />}
-                  className="justify-between"
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-warning" />
-                    Licenses expiring
-                  </span>
-                  <span className="font-medium tabular-nums">{expiringLicenses}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  render={<Link href="/vehicles" />}
-                  className="justify-between"
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-warning" />
-                    Documents expiring
-                  </span>
-                  <span className="font-medium tabular-nums">{expiringDocuments}</span>
-                </DropdownMenuItem>
-              </>
-            )}
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Needs attention</DropdownMenuLabel>
+              {attention === 0 ? (
+                <div className="flex items-center gap-2 px-1.5 py-3 text-sm text-muted-foreground">
+                  <CheckCircle2 className="size-4 text-success" />
+                  All clear — nothing expiring.
+                </div>
+              ) : (
+                <>
+                  <DropdownMenuItem
+                    render={<Link href="/drivers" />}
+                    className="justify-between"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="size-1.5 rounded-full bg-warning" />
+                      Licenses expiring
+                    </span>
+                    <span className="font-medium tabular-nums">{expiringLicenses}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    render={<Link href="/vehicles" />}
+                    className="justify-between"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="size-1.5 rounded-full bg-warning" />
+                      Documents expiring
+                    </span>
+                    <span className="font-medium tabular-nums">{expiringDocuments}</span>
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -130,10 +133,12 @@ export function Topbar({
             <ChevronDown className="hidden size-4 text-muted-foreground sm:block" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="flex flex-col gap-0.5 py-1.5">
-              <span className="text-sm font-medium text-foreground">{name}</span>
-              <span className="text-xs text-muted-foreground">{ROLE_LABELS[role]}</span>
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="flex flex-col gap-0.5 py-1.5">
+                <span className="text-sm font-medium text-foreground">{name}</span>
+                <span className="text-xs text-muted-foreground">{ROLE_LABELS[role]}</span>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={openShortcuts}>
               <Keyboard className="size-4" />
@@ -144,6 +149,7 @@ export function Topbar({
             <form action={logout}>
               <DropdownMenuItem
                 variant="destructive"
+                nativeButton
                 render={<button type="submit" className="w-full" />}
               >
                 <LogOut className="size-4" />
