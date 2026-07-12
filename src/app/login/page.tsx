@@ -23,17 +23,8 @@ export default function LoginPage() {
 
   return (
     <div className="relative grid min-h-svh place-items-center overflow-hidden bg-background p-4">
-      {/* precision backdrop */}
-      <div className="bg-grid pointer-events-none absolute inset-0 opacity-[0.55]" />
-      <div className="bg-signal-glow pointer-events-none absolute inset-0" />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 60% at 50% 40%, transparent, var(--background) 78%)",
-        }}
-      />
+      {/* precision hairline grid */}
+      <div className="bg-grid pointer-events-none absolute inset-0 opacity-40" />
 
       <div className="relative w-full max-w-sm space-y-5">
         <div className="flex flex-col items-center gap-3 text-center">

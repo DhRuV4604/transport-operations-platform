@@ -107,7 +107,13 @@ export function DataTable({
             onValueChange={(v) => setFilterValues((s) => ({ ...s, [f.key]: (v as string) ?? ALL }))}
           >
             <SelectTrigger className="w-40">
-              <SelectValue placeholder={f.label} />
+              <SelectValue placeholder={f.label}>
+                {(value) =>
+                  !value || value === ALL
+                    ? `All ${f.label}`
+                    : (f.options.find((o) => o.value === value)?.label ?? String(value))
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>All {f.label}</SelectItem>

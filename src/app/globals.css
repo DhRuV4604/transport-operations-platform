@@ -303,16 +303,6 @@
     letter-spacing: var(--tracking-tighter);
   }
 
-  /* Subtle radial teal glow for hero surfaces */
-  .bg-signal-glow {
-    background:
-      radial-gradient(
-        60% 80% at 15% 0%,
-        color-mix(in oklch, var(--primary) 12%, transparent),
-        transparent 70%
-      );
-  }
-
   /* Animated keyboard-key affordance */
   kbd.kbd {
     @apply inline-flex h-5 min-w-5 items-center justify-center rounded border border-border bg-muted px-1.5 text-[0.6875rem] font-medium text-muted-foreground;

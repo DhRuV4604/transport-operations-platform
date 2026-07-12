@@ -47,7 +47,13 @@ export function ReportsDateFilter() {
   return (
     <Select value={currentPreset(searchParams)} onValueChange={(v) => setPreset(v as string)}>
       <SelectTrigger className="w-40 print:hidden">
-        <SelectValue placeholder="Date range" />
+        <SelectValue placeholder="Date range">
+          {(value) =>
+            !value || value === ALL
+              ? "All time"
+              : (PRESETS.find((p) => p.key === value)?.label ?? String(value))
+          }
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectItem value={ALL}>All time</SelectItem>

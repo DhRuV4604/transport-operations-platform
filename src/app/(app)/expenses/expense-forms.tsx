@@ -59,7 +59,10 @@ export function AddFuelLogDialog({ vehicles }: { vehicles: VehicleOpt[] }) {
         <form action={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Vehicle</Label>
-            <Select name="vehicleId">
+            <Select
+              name="vehicleId"
+              items={vehicles.map((v) => ({ value: v.id, label: v.regNumber }))}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select vehicle" />
               </SelectTrigger>
@@ -124,7 +127,11 @@ export function AddExpenseDialog({ vehicles }: { vehicles: VehicleOpt[] }) {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Category</Label>
-              <Select name="category" defaultValue="TOLL">
+              <Select
+                name="category"
+                defaultValue="TOLL"
+                items={EXPENSE_CATEGORIES.map((c) => ({ value: c, label: c.charAt(0) + c.slice(1).toLowerCase() }))}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -139,7 +146,11 @@ export function AddExpenseDialog({ vehicles }: { vehicles: VehicleOpt[] }) {
             </div>
             <div className="space-y-1.5">
               <Label>Vehicle (optional)</Label>
-              <Select name="vehicleId" defaultValue="none">
+              <Select
+                name="vehicleId"
+                defaultValue="none"
+                items={[{ value: "none", label: "—" }, ...vehicles.map((v) => ({ value: v.id, label: v.regNumber }))]}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>

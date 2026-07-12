@@ -61,7 +61,10 @@ export function NewMaintenanceDialog({
         <form action={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Vehicle</Label>
-            <Select name="vehicleId">
+            <Select
+              name="vehicleId"
+              items={vehicles.map((v) => ({ value: v.id, label: `${v.regNumber} · ${v.name}` }))}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select vehicle" />
               </SelectTrigger>
@@ -77,7 +80,11 @@ export function NewMaintenanceDialog({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Service Type</Label>
-              <Select name="serviceType" defaultValue="ROUTINE">
+              <Select
+                name="serviceType"
+                defaultValue="ROUTINE"
+                items={SERVICE_TYPES.map((s) => ({ value: s, label: s.charAt(0) + s.slice(1).toLowerCase() }))}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>

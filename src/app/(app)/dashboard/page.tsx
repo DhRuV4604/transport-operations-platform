@@ -92,7 +92,7 @@ export default async function DashboardPage({
   return (
     <div className="space-y-6">
       {/* hero */}
-      <div className="-mx-4 -mt-4 border-b bg-signal-glow px-4 pt-5 pb-5 md:-mx-6 md:-mt-6 md:px-6">
+      <div className="-mx-4 -mt-4 border-b px-4 pt-5 pb-5 md:-mx-6 md:-mt-6 md:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-medium text-muted-foreground">

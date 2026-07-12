@@ -56,7 +56,11 @@ function VehicleFields({ vehicle }: { vehicle?: VehicleDto }) {
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label>Type</Label>
-          <Select name="type" defaultValue={vehicle?.type ?? "VAN"}>
+          <Select
+            name="type"
+            defaultValue={vehicle?.type ?? "VAN"}
+            items={VEHICLE_TYPES.map((t) => ({ value: t, label: t.charAt(0) + t.slice(1).toLowerCase() }))}
+          >
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -71,7 +75,11 @@ function VehicleFields({ vehicle }: { vehicle?: VehicleDto }) {
         </div>
         <div className="space-y-1.5">
           <Label>Region</Label>
-          <Select name="region" defaultValue={vehicle?.region ?? "WEST"}>
+          <Select
+            name="region"
+            defaultValue={vehicle?.region ?? "WEST"}
+            items={REGIONS.map((r) => ({ value: r, label: r.charAt(0) + r.slice(1).toLowerCase() }))}
+          >
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>

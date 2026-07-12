@@ -88,6 +88,7 @@ export function NewTripDialog({
               name="vehicleId"
               value={vehicleId}
               onValueChange={(v) => setVehicleId(v as string)}
+              items={vehicles.map((v) => ({ value: v.id, label: `${v.regNumber} · ${v.name}` }))}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select available vehicle" />
@@ -111,7 +112,10 @@ export function NewTripDialog({
           </div>
           <div className="space-y-1.5">
             <Label>Driver</Label>
-            <Select name="driverId">
+            <Select
+              name="driverId"
+              items={drivers.map((d) => ({ value: d.id, label: `${d.name} (${d.licenseCategory})` }))}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select available driver" />
               </SelectTrigger>
