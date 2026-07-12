@@ -45,7 +45,7 @@ export default async function DriversPage() {
         safetyScore: {
           value: d.safetyScore,
           node: (
-            <span className={d.safetyScore < 60 ? "text-red-600 dark:text-red-400 font-medium" : ""}>
+            <span className={d.safetyScore < 60 ? "text-destructive font-medium tabular-nums" : "tabular-nums"}>
               {d.safetyScore}
             </span>
           ),

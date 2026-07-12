@@ -20,8 +20,8 @@ export function KpiCard({
       <CardContent>
         <div
           className={cn(
-            "text-2xl font-semibold",
-            tone === "warning" && "text-amber-600 dark:text-amber-400"
+            "text-2xl font-semibold tabular-nums",
+            tone === "warning" && "text-warning"
           )}
         >
           {value}
