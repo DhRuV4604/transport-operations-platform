@@ -124,7 +124,12 @@ export function DataTable({
             {visible.length} of {rows.length}
           </span>
           {exportHref && (
-            <Button variant="outline" size="sm" render={<a href={exportHref} />}>
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={<a href={exportHref} />}
+            >
               <Download className="h-4 w-4 mr-1" /> CSV
             </Button>
           )}

@@ -27,6 +27,7 @@ import {
   completeTripAction,
   cancelTripAction,
 } from "@/server/actions/trips";
+import { useQuickCreate } from "@/components/use-quick-create";
 
 export type VehicleOption = { id: string; regNumber: string; name: string; maxLoadKg: number };
 export type DriverOption = { id: string; name: string; licenseCategory: string };
@@ -41,6 +42,7 @@ export function NewTripDialog({
   const [open, setOpen] = React.useState(false);
   const [vehicleId, setVehicleId] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
+  useQuickCreate(setOpen);
 
   const selectedVehicle = vehicles.find((v) => v.id === vehicleId);
 

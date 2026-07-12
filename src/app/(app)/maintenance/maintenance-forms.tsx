@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { SERVICE_TYPES } from "@/lib/constants";
 import { openMaintenanceAction, closeMaintenanceAction } from "@/server/actions/maintenance";
+import { useQuickCreate } from "@/components/use-quick-create";
 
 export function NewMaintenanceDialog({
   vehicles,
@@ -31,6 +32,7 @@ export function NewMaintenanceDialog({
 }) {
   const [open, setOpen] = React.useState(false);
   const [pending, startTransition] = React.useTransition();
+  useQuickCreate(setOpen);
 
   const submit = (formData: FormData) => {
     startTransition(async () => {

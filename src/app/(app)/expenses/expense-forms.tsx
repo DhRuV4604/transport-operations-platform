@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { EXPENSE_CATEGORIES } from "@/lib/constants";
 import { addFuelLogAction, addExpenseAction } from "@/server/actions/expenses";
+import { useQuickCreate } from "@/components/use-quick-create";
 
 type VehicleOpt = { id: string; regNumber: string };
 
@@ -32,6 +33,7 @@ function today() {
 export function AddFuelLogDialog({ vehicles }: { vehicles: VehicleOpt[] }) {
   const [open, setOpen] = React.useState(false);
   const [pending, startTransition] = React.useTransition();
+  useQuickCreate(setOpen);
 
   const submit = (formData: FormData) => {
     startTransition(async () => {

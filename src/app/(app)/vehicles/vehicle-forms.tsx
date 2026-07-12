@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { VEHICLE_TYPES, REGIONS } from "@/lib/constants";
+import { useQuickCreate } from "@/components/use-quick-create";
 import {
   createVehicleAction,
   updateVehicleAction,
@@ -105,6 +106,7 @@ function VehicleFields({ vehicle }: { vehicle?: VehicleDto }) {
 export function AddVehicleDialog() {
   const [open, setOpen] = React.useState(false);
   const [pending, startTransition] = React.useTransition();
+  useQuickCreate(setOpen);
 
   const submit = (formData: FormData) => {
     startTransition(async () => {

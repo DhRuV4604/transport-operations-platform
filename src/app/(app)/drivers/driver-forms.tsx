@@ -27,6 +27,7 @@ import {
   setDriverStatusAction,
   sendLicenseRemindersAction,
 } from "@/server/actions/drivers";
+import { useQuickCreate } from "@/components/use-quick-create";
 
 export type DriverDto = {
   id: string;
@@ -89,6 +90,7 @@ function DriverFields({ driver }: { driver?: DriverDto }) {
 
 export function AddDriverDialog() {
   const [open, setOpen] = React.useState(false);
+  useQuickCreate(setOpen);
   const [pending, startTransition] = React.useTransition();
 
   const submit = (formData: FormData) => {

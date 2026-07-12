@@ -262,7 +262,7 @@ export default async function VehicleDetailPage({
                           </TableCell>
                           <TableCell>{format(d.uploadedAt, "dd MMM yyyy")}</TableCell>
                           <TableCell className="text-right whitespace-nowrap">
-                            <Button variant="ghost" size="icon" aria-label="Download" render={<a href={d.filePath} target="_blank" rel="noopener noreferrer" />}>
+                            <Button variant="ghost" size="icon" aria-label="Download" nativeButton={false} render={<a href={d.filePath} target="_blank" rel="noopener noreferrer" />}>
                               <Download className="h-4 w-4" />
                             </Button>
                             {canWrite && <DeleteDocumentButton id={d.id} vehicleId={vehicle.id} />}
