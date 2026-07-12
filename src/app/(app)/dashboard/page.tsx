@@ -51,6 +51,18 @@ export default async function DashboardPage({
         <KpiCard label="Active trips" value={kpis.activeTrips} sub="Currently dispatched" />
         <KpiCard label="Pending trips" value={kpis.draftTrips} sub="Drafts awaiting dispatch" />
         <KpiCard label="Drivers on duty" value={kpis.driversOnDuty} sub="Available or on a trip" />
+        <KpiCard
+          label="Expiring licenses"
+          value={kpis.expiringLicenses}
+          sub="Expired or expiring within 30 days"
+          tone={kpis.expiringLicenses > 0 ? "warning" : "default"}
+        />
+        <KpiCard
+          label="Documents expiring soon"
+          value={kpis.expiringDocuments}
+          sub="Vehicle documents expired or due within 30 days"
+          tone={kpis.expiringDocuments > 0 ? "warning" : "default"}
+        />
       </div>
 
       <Card>

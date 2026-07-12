@@ -5,6 +5,11 @@ import { z } from "zod";
 import { requirePermission } from "@/lib/auth";
 import { LICENSE_CATEGORIES } from "@/lib/constants";
 import * as driverService from "@/server/services/driverService";
+import {
+  sendLicenseReminders,
+  type LicenseReminderResult,
+} from "@/server/services/licenseReminderService";
+import { logAuditEvent } from "@/server/services/auditService";
 import { type ActionResult, fail } from "./types";
 
 const driverSchema = z.object({
@@ -51,11 +56,33 @@ export async function setDriverStatusAction(
   status: "AVAILABLE" | "OFF_DUTY" | "SUSPENDED"
 ): Promise<ActionResult> {
   try {
-    await requirePermission("drivers.write");
-    await driverService.setDriverStatus(id, status);
+    const session = await requirePermission("drivers.write");
+    const driver = await driverService.setDriverStatus(id, status);
+    if (status === "SUSPENDED" || status === "AVAILABLE") {
+      await logAuditEvent(session, {
+        action: status === "SUSPENDED" ? "DRIVER_SUSPENDED" : "DRIVER_REINSTATED",
+        entityType: "DRIVER",
+        entityId: driver.id,
+        entityLabel: driver.name,
+      });
+    }
     revalidatePath("/drivers");
     return { ok: true };
   } catch (e) {
     return fail(e);
+  }
+}
+
+export async function sendLicenseRemindersAction(): Promise<
+  ({ ok: true } & LicenseReminderResult) | { ok: false; error: string }
+> {
+  try {
+    await requirePermission("drivers.write");
+    const result = await sendLicenseReminders();
+    revalidatePath("/drivers");
+    return { ok: true, ...result };
+  } catch (e) {
+    const fallback = fail(e);
+    return fallback as { ok: false; error: string };
   }
 }

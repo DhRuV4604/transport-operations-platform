@@ -14,7 +14,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="flex min-h-svh w-full">
       <AppSidebar />
       <div className="flex flex-1 flex-col min-w-0">
-        <header className="flex h-14 items-center justify-end gap-3 border-b px-4">
+        <header className="flex h-14 items-center justify-end gap-3 border-b px-4 print:hidden">
           <span className="text-sm font-medium">{session.name}</span>
           <Badge variant="secondary">{ROLE_LABELS[session.role]}</Badge>
           <ThemeToggle />

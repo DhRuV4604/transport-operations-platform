@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { format } from "date-fns";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth";
@@ -26,9 +27,9 @@ export default async function TripsPage() {
       route: {
         value: `${t.source} → ${t.destination}`,
         node: (
-          <span className="font-medium">
+          <Link href={`/trips/${t.id}`} className="font-medium underline-offset-4 hover:underline">
             {t.source} → {t.destination}
-          </span>
+          </Link>
         ),
       },
       vehicle: { value: t.vehicle.regNumber },

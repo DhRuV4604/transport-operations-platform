@@ -10,6 +10,7 @@ import {
   Wrench,
   Fuel,
   BarChart3,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,12 +22,13 @@ const NAV_ITEMS = [
   { href: "/maintenance", label: "Maintenance", icon: Wrench },
   { href: "/expenses", label: "Fuel & Expenses", icon: Fuel },
   { href: "/reports", label: "Reports", icon: BarChart3 },
+  { href: "/audit", label: "Audit Log", icon: History },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
   return (
-    <aside className="hidden md:flex w-56 shrink-0 flex-col border-r bg-sidebar">
+    <aside className="hidden md:flex w-56 shrink-0 flex-col border-r bg-sidebar print:hidden">
       <div className="flex h-14 items-center gap-2 border-b px-4 font-bold">
         <Truck className="h-5 w-5" />
         TransitOps
@@ -55,7 +57,7 @@ export function AppSidebar() {
 export function MobileNav() {
   const pathname = usePathname();
   return (
-    <nav className="md:hidden flex overflow-x-auto border-t bg-background">
+    <nav className="md:hidden flex overflow-x-auto border-t bg-background print:hidden">
       {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
         <Link
           key={href}

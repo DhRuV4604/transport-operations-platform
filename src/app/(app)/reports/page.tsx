@@ -1,9 +1,11 @@
+import { format } from "date-fns";
 import { requireSession } from "@/lib/auth";
 import {
   getFuelEfficiencyReport,
   getVehicleCostReport,
   getFleetUtilization,
   getRoiReport,
+  type DateRange,
 } from "@/server/services/analyticsService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTable, type DataRow } from "@/components/data-table";
@@ -11,16 +13,35 @@ import { StatusBadge } from "@/components/status-badge";
 import { FuelEfficiencyChart } from "@/components/charts/fuel-efficiency-chart";
 import { CostChart } from "@/components/charts/cost-chart";
 import { UtilizationChart } from "@/components/charts/utilization-chart";
+import { PrintButton } from "@/components/print-button";
+import { ReportsDateFilter } from "./reports-date-filter";
 import { cn } from "@/lib/utils";
 
-export default async function ReportsPage() {
+function parseDate(value: string | string[] | undefined) {
+  if (typeof value !== "string") return undefined;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
+
+export default async function ReportsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   await requireSession();
+  const params = await searchParams;
+
+  const range: DateRange = { from: parseDate(params.from), to: parseDate(params.to) };
+  const rangeLabel =
+    range.from && range.to
+      ? `${format(range.from, "dd MMM yyyy")} – ${format(range.to, "dd MMM yyyy")}`
+      : "All time";
 
   const [fuelEfficiency, costs, utilization, roi] = await Promise.all([
-    getFuelEfficiencyReport(),
-    getVehicleCostReport(),
+    getFuelEfficiencyReport(range),
+    getVehicleCostReport(range),
     getFleetUtilization(),
-    getRoiReport(),
+    getRoiReport(range),
   ]);
 
   const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
@@ -53,14 +74,20 @@ export default async function ReportsPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">Reports</h1>
-        <p className="text-sm text-muted-foreground">
-          Fuel efficiency, operational cost, utilization, and vehicle ROI
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Reports</h1>
+          <p className="text-sm text-muted-foreground">
+            Fuel efficiency, operational cost, utilization, and vehicle ROI · {rangeLabel}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <ReportsDateFilter />
+          <PrintButton />
+        </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2 print-page-break">
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Fuel efficiency (km/L)</CardTitle>
@@ -86,10 +113,10 @@ export default async function ReportsPage() {
         </Card>
       </div>
 
-      <Card>
+      <Card className="print-page-break">
         <CardHeader>
           <CardTitle className="text-base">Operational cost per vehicle</CardTitle>
-          <p className="text-xs text-muted-foreground">Fuel and maintenance spend, all time</p>
+          <p className="text-xs text-muted-foreground">Fuel and maintenance spend · {rangeLabel}</p>
         </CardHeader>
         <CardContent>
           <CostChart data={costs} />

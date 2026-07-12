@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth";
+import { hasPermission } from "@/lib/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -15,7 +16,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
+import { ExpiryBadge } from "@/components/expiry-badge";
 import { KpiCard } from "@/components/kpi-card";
+import { Button } from "@/components/ui/button";
+import { UploadDocumentDialog, DeleteDocumentButton } from "./vehicle-document-forms";
 
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
@@ -34,7 +38,8 @@ export default async function VehicleDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireSession();
+  const session = await requireSession();
+  const canWrite = hasPermission(session.role, "vehicles.write");
   const { id } = await params;
 
   const vehicle = await db.vehicle.findUnique({
@@ -44,6 +49,7 @@ export default async function VehicleDetailPage({
       maintenanceLogs: { orderBy: { openedAt: "desc" } },
       fuelLogs: { include: { trip: true }, orderBy: { date: "desc" } },
       expenses: { orderBy: { date: "desc" } },
+      documents: { orderBy: { uploadedAt: "desc" } },
     },
   });
   if (!vehicle) notFound();
@@ -99,6 +105,7 @@ export default async function VehicleDetailPage({
               </TabsTrigger>
               <TabsTrigger value="fuel">Fuel ({vehicle.fuelLogs.length})</TabsTrigger>
               <TabsTrigger value="expenses">Expenses ({vehicle.expenses.length})</TabsTrigger>
+              <TabsTrigger value="documents">Documents ({vehicle.documents.length})</TabsTrigger>
             </TabsList>
 
             <TabsContent value="trips" className="mt-3 rounded-md border overflow-x-auto">
@@ -223,6 +230,49 @@ export default async function VehicleDetailPage({
                   )}
                 </TableBody>
               </Table>
+            </TabsContent>
+
+            <TabsContent value="documents" className="mt-3 space-y-3">
+              {canWrite && (
+                <div className="flex justify-end">
+                  <UploadDocumentDialog vehicleId={vehicle.id} />
+                </div>
+              )}
+              <div className="rounded-md border overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Kind</TableHead>
+                      <TableHead>Expiry</TableHead>
+                      <TableHead>Uploaded</TableHead>
+                      <TableHead className="w-0" />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {vehicle.documents.length === 0 ? (
+                      <EmptyRow colSpan={5} message="No documents uploaded." />
+                    ) : (
+                      vehicle.documents.map((d) => (
+                        <TableRow key={d.id}>
+                          <TableCell className="font-medium">{d.title}</TableCell>
+                          <TableCell>{d.kind}</TableCell>
+                          <TableCell>
+                            {d.expiryDate ? <ExpiryBadge date={d.expiryDate} /> : "—"}
+                          </TableCell>
+                          <TableCell>{format(d.uploadedAt, "dd MMM yyyy")}</TableCell>
+                          <TableCell className="text-right whitespace-nowrap">
+                            <Button variant="ghost" size="icon" aria-label="Download" render={<a href={d.filePath} target="_blank" rel="noopener noreferrer" />}>
+                              <Download className="h-4 w-4" />
+                            </Button>
+                            {canWrite && <DeleteDocumentButton id={d.id} vehicleId={vehicle.id} />}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>

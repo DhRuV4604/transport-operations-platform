@@ -34,6 +34,9 @@ export const SERVICE_TYPES = ["ROUTINE", "REPAIR", "INSPECTION"] as const;
 
 export const EXPENSE_CATEGORIES = ["TOLL", "PARKING", "FINE", "OTHER"] as const;
 
+export const DOCUMENT_KINDS = ["RC", "INSURANCE", "PERMIT", "PUC", "OTHER"] as const;
+export type DocumentKind = (typeof DOCUMENT_KINDS)[number];
+
 export const STATUS_LABELS: Record<string, string> = {
   AVAILABLE: "Available",
   ON_TRIP: "On Trip",

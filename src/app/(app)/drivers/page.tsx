@@ -1,23 +1,12 @@
-import { differenceInDays, format } from "date-fns";
+import Link from "next/link";
+import { format } from "date-fns";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth";
 import { hasPermission, DRIVER_STATUS, LICENSE_CATEGORIES, STATUS_LABELS } from "@/lib/constants";
 import { DataTable, type DataRow } from "@/components/data-table";
 import { StatusBadge } from "@/components/status-badge";
-import { Badge } from "@/components/ui/badge";
-import { AddDriverDialog, DriverRowActions, type DriverDto } from "./driver-forms";
-
-function LicenseExpiryBadge({ expiry }: { expiry: Date }) {
-  const days = differenceInDays(expiry, new Date());
-  const label = format(expiry, "dd MMM yyyy");
-  if (days < 0) {
-    return <Badge className="bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 border-transparent">Expired · {label}</Badge>;
-  }
-  if (days <= 30) {
-    return <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-transparent">{days}d left · {label}</Badge>;
-  }
-  return <span>{label}</span>;
-}
+import { ExpiryBadge } from "@/components/expiry-badge";
+import { AddDriverDialog, DriverRowActions, SendRemindersButton, type DriverDto } from "./driver-forms";
 
 export default async function DriversPage() {
   const session = await requireSession();
@@ -38,12 +27,19 @@ export default async function DriversPage() {
     return {
       id: d.id,
       cells: {
-        name: { value: d.name, node: <span className="font-medium">{d.name}</span> },
+        name: {
+          value: d.name,
+          node: (
+            <Link href={`/drivers/${d.id}`} className="font-medium underline-offset-4 hover:underline">
+              {d.name}
+            </Link>
+          ),
+        },
         licenseNumber: { value: d.licenseNumber },
         licenseCategory: { value: d.licenseCategory },
         licenseExpiry: {
           value: d.licenseExpiry.toISOString(),
-          node: <LicenseExpiryBadge expiry={d.licenseExpiry} />,
+          node: <ExpiryBadge date={d.licenseExpiry} />,
         },
         phone: { value: d.phone },
         safetyScore: {
@@ -67,7 +63,12 @@ export default async function DriversPage() {
           <h1 className="text-2xl font-bold">Drivers</h1>
           <p className="text-sm text-muted-foreground">Profiles, licenses and safety compliance</p>
         </div>
-        {canWrite && <AddDriverDialog />}
+        {canWrite && (
+          <div className="flex items-center gap-2">
+            <SendRemindersButton />
+            <AddDriverDialog />
+          </div>
+        )}
       </div>
       <DataTable
         columns={[

@@ -43,3 +43,21 @@ export async function setDriverStatus(id: string, status: "AVAILABLE" | "OFF_DUT
     return tx.driver.update({ where: { id }, data: { status } });
   });
 }
+
+/** Drivers whose license has already expired or expires within `days`. */
+function expiringLicenseWhere(days = 30) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() + days);
+  return { licenseExpiry: { lte: cutoff } };
+}
+
+export async function getExpiringLicenses(days = 30) {
+  return db.driver.findMany({
+    where: expiringLicenseWhere(days),
+    orderBy: { licenseExpiry: "asc" },
+  });
+}
+
+export async function countExpiringLicenses(days = 30) {
+  return db.driver.count({ where: expiringLicenseWhere(days) });
+}

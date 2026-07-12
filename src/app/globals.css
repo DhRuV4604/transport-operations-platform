@@ -139,3 +139,29 @@
     @apply font-sans;
   }
 }
+
+@media print {
+  /* Print always renders in light theme, regardless of the active .dark class. */
+  :root,
+  .dark {
+    --background: oklch(1 0 0) !important;
+    --foreground: oklch(0.145 0 0) !important;
+    --card: oklch(1 0 0) !important;
+    --card-foreground: oklch(0.145 0 0) !important;
+    --muted-foreground: oklch(0.556 0 0) !important;
+    --border: oklch(0.922 0 0) !important;
+  }
+
+  main {
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .print-page-break {
+    break-after: page;
+  }
+
+  .print-page-break:last-child {
+    break-after: auto;
+  }
+}

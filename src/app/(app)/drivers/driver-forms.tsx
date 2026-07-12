@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { toast } from "sonner";
-import { Plus, Pencil, Ban, RotateCcw } from "lucide-react";
+import { Plus, Pencil, Ban, RotateCcw, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,6 +25,7 @@ import {
   createDriverAction,
   updateDriverAction,
   setDriverStatusAction,
+  sendLicenseRemindersAction,
 } from "@/server/actions/drivers";
 
 export type DriverDto = {
@@ -175,5 +176,35 @@ export function DriverRowActions({ driver }: { driver: DriverDto }) {
         </Button>
       )}
     </div>
+  );
+}
+
+export function SendRemindersButton() {
+  const [pending, startTransition] = React.useTransition();
+
+  const send = () => {
+    startTransition(async () => {
+      const res = await sendLicenseRemindersAction();
+      if (!res.ok) {
+        toast.error(res.error);
+        return;
+      }
+      if (res.sent === 0) {
+        toast.info("No reminders due — everything expiring was already reminded in the last 24h.");
+        return;
+      }
+      toast.success(
+        `Reminded ${res.recipients} safety officer(s) about ${res.sent} driver(s).`,
+        res.previewUrls.length
+          ? { description: `Preview: ${res.previewUrls[0]}` }
+          : undefined
+      );
+    });
+  };
+
+  return (
+    <Button variant="outline" onClick={send} disabled={pending}>
+      <Mail className="h-4 w-4 mr-1" /> {pending ? "Sending…" : "Send reminders now"}
+    </Button>
   );
 }

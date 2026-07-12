@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requirePermission } from "@/lib/auth";
 import { VEHICLE_TYPES, REGIONS } from "@/lib/constants";
 import * as vehicleService from "@/server/services/vehicleService";
+import { logAuditEvent } from "@/server/services/auditService";
 import { type ActionResult, fail } from "./types";
 
 const vehicleSchema = z.object({
@@ -49,8 +50,14 @@ export async function updateVehicleAction(id: string, formData: FormData): Promi
 
 export async function retireVehicleAction(id: string): Promise<ActionResult> {
   try {
-    await requirePermission("vehicles.write");
-    await vehicleService.retireVehicle(id);
+    const session = await requirePermission("vehicles.write");
+    const vehicle = await vehicleService.retireVehicle(id);
+    await logAuditEvent(session, {
+      action: "VEHICLE_RETIRED",
+      entityType: "VEHICLE",
+      entityId: vehicle.id,
+      entityLabel: vehicle.regNumber,
+    });
     revalidatePath("/vehicles");
     return { ok: true };
   } catch (e) {

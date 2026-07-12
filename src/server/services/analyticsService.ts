@@ -1,5 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
+import { countExpiringLicenses } from "@/server/services/driverService";
+import { countExpiringDocuments } from "@/server/services/vehicleDocumentService";
 
 export type VehicleFilters = {
   type?: string;
@@ -15,15 +17,28 @@ function vehicleWhere(filters: VehicleFilters) {
   };
 }
 
+export type DateRange = { from?: Date; to?: Date };
+
+function dateRangeFilter(range: DateRange = {}) {
+  if (!range.from && !range.to) return undefined;
+  return {
+    ...(range.from ? { gte: range.from } : {}),
+    ...(range.to ? { lte: range.to } : {}),
+  };
+}
+
 /** Dashboard KPIs. Vehicle counts respect the type/status/region filters; trip and driver counts are fleet-wide. */
 export async function getKpis(filters: VehicleFilters = {}) {
   const where = vehicleWhere(filters);
-  const [byStatus, activeTrips, draftTrips, driversOnDuty] = await Promise.all([
-    db.vehicle.groupBy({ by: ["status"], where, _count: { _all: true } }),
-    db.trip.count({ where: { status: "DISPATCHED" } }),
-    db.trip.count({ where: { status: "DRAFT" } }),
-    db.driver.count({ where: { status: { in: ["AVAILABLE", "ON_TRIP"] } } }),
-  ]);
+  const [byStatus, activeTrips, draftTrips, driversOnDuty, expiringLicenses, expiringDocuments] =
+    await Promise.all([
+      db.vehicle.groupBy({ by: ["status"], where, _count: { _all: true } }),
+      db.trip.count({ where: { status: "DISPATCHED" } }),
+      db.trip.count({ where: { status: "DRAFT" } }),
+      db.driver.count({ where: { status: { in: ["AVAILABLE", "ON_TRIP"] } } }),
+      countExpiringLicenses(),
+      countExpiringDocuments(),
+    ]);
 
   const count = (status: string) => byStatus.find((g) => g.status === status)?._count._all ?? 0;
   const onTrip = count("ON_TRIP");
@@ -37,15 +52,21 @@ export async function getKpis(filters: VehicleFilters = {}) {
     activeTrips,
     draftTrips,
     driversOnDuty,
+    expiringLicenses,
+    expiringDocuments,
     utilizationPct: active > 0 ? Math.round((onTrip / active) * 100) : 0,
   };
 }
 
 /** km/L per vehicle from completed trips (Σ end−start odometer) and their linked fuel logs. */
-export async function getFuelEfficiencyReport() {
+export async function getFuelEfficiencyReport(range: DateRange = {}) {
+  const completedAt = dateRangeFilter(range);
   const vehicles = await db.vehicle.findMany({
     include: {
-      trips: { where: { status: "COMPLETED" }, include: { fuelLogs: true } },
+      trips: {
+        where: { status: "COMPLETED", ...(completedAt ? { completedAt } : {}) },
+        include: { fuelLogs: true },
+      },
     },
     orderBy: { regNumber: "asc" },
   });
@@ -70,9 +91,14 @@ export async function getFuelEfficiencyReport() {
 }
 
 /** Fuel vs maintenance vs other spend per vehicle (all logs, not just trip-linked). */
-export async function getVehicleCostReport() {
+export async function getVehicleCostReport(range: DateRange = {}) {
+  const dateFilter = dateRangeFilter(range);
   const vehicles = await db.vehicle.findMany({
-    include: { fuelLogs: true, maintenanceLogs: true, expenses: true },
+    include: {
+      fuelLogs: dateFilter ? { where: { date: dateFilter } } : true,
+      maintenanceLogs: dateFilter ? { where: { openedAt: dateFilter } } : true,
+      expenses: dateFilter ? { where: { date: dateFilter } } : true,
+    },
     orderBy: { regNumber: "asc" },
   });
 
@@ -111,12 +137,15 @@ export async function getFleetUtilization() {
 }
 
 /** ROI per vehicle: (Σ trip revenue − (maintenance + fuel)) / acquisition cost. */
-export async function getRoiReport() {
+export async function getRoiReport(range: DateRange = {}) {
+  const dateFilter = dateRangeFilter(range);
   const vehicles = await db.vehicle.findMany({
     include: {
-      trips: { where: { status: "COMPLETED" } },
-      fuelLogs: true,
-      maintenanceLogs: true,
+      trips: {
+        where: { status: "COMPLETED", ...(dateFilter ? { completedAt: dateFilter } : {}) },
+      },
+      fuelLogs: dateFilter ? { where: { date: dateFilter } } : true,
+      maintenanceLogs: dateFilter ? { where: { openedAt: dateFilter } } : true,
     },
     orderBy: { regNumber: "asc" },
   });
