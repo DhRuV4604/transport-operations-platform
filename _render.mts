@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { resolveCoords, project, MAP_VIEWBOX } from "./src/lib/geo.ts";
+import { resolveCoords, project, MAP_VIEWBOX } from "./src/lib/geo";
 const db = new PrismaClient();
 const INDIA_PATH =
   "M196 40 L232 44 L250 70 L286 74 L300 96 L336 92 L360 120 L352 156 L378 180 " +
